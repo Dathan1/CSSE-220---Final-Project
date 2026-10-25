@@ -1,0 +1,43 @@
+@startuml
+title Project Milestone 1 : CSSE 220
+
+class StarterApp {
+  - locations : Location[]
+  - currentRound : int
+  - currentScore : int
+  + startGame() : void
+  + nextRound() : void
+  + endGame() : void
+}
+
+class GameRound{
+    - roundNumber : int
+    - pointsEarned : int
+    + loadLocation() : void
+    + calculateGuess() : double
+}
+
+class PlayerGuess{
+    - getMouseX : double
+    - getMouseY : double
+    + submitGuess(x : double, y : double) : void
+
+}
+
+
+class Location {
+    - image : Image
+    - x : double
+    - y : double
+    +location(image : Image, x : double, y : double)
+    +getX() : double
+    +getY() : double
+    +getImage() : Image
+    +updateView() : void
+}
+
+StarterApp--> GameRound
+GameRound -->"*" Location
+GameRound --> PlayerGuess
+
+@enduml
