@@ -32,7 +32,7 @@ public class StarterApp extends Application {
 
         // TODO 4: Set the window title and size.
         Scene scene = new Scene(root, 420, 220);
-        stage.setTitle("CSSE220 Team Starter");
+        stage.setTitle("Fuk U");
         stage.setScene(scene);
         stage.show();
 
