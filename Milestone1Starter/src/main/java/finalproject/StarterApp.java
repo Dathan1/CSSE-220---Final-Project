@@ -55,12 +55,6 @@ public class StarterApp extends Application {
         submit.setLayoutY(110);
 
         // image
-        ImageView imageView = new ImageView();
-        imageView.setFitHeight(30);
-        imageView.setFitWidth(30);
-        // TODO 1: Choose a simple app title and create a small root layout.
-        Label titleLabel = new Label("CSSE220 Final Project");
-        Label statusLabel = new Label("Starter app is ready.");
         ImageView marker = new ImageView();
         marker.setFitHeight(30);
         marker.setFitWidth(30);
@@ -70,7 +64,7 @@ public class StarterApp extends Application {
         back1.setOpacity(0.25);
 
         // layout
-        Pane menu = new Pane(title, start, imageView);
+        Pane menu = new Pane(title, start, marker);
         menu.setPadding(new Insets(20));
 
         Pane game = new Pane(back1, submit);
