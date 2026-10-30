@@ -1,9 +1,6 @@
 package finalproject;
 
 public class PlayerGuess {
-<<<<<<< HEAD
-
-=======
     Location correct;
     double guess_x;
     double guess_y;
@@ -17,5 +14,5 @@ public class PlayerGuess {
     public int pointTotal (){
         return 5000-(int)Math.sqrt(Math.pow((guess_x-correct.getX()), 2) + Math.pow((guess_y-correct.getY()), 2));
     }
->>>>>>> main
+
 }
