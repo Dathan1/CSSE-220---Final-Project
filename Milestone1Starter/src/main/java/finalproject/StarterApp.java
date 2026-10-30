@@ -22,6 +22,15 @@ public class StarterApp extends Application {
 
     @Override
     public void start(Stage stage) {
+        GameRound game = new GameRound();
+        Location currentLocation = game.pickRandomLocation();
+        ImageView locationImage = new ImageView();
+        locationImage.setFitHeight(200);
+        locationImage.setFitWidth(250);
+        locationImage.setX(100);
+        locationImage.setY(20);
+        locationImage.setImage(currentLocation.getImage());
+
         // TODO 1: Choose a simple app title and create a small root layout.
         Label titleLabel = new Label("CSSE220 Final Project");
         Label statusLabel = new Label("Starter app is ready.");
@@ -38,7 +47,7 @@ public class StarterApp extends Application {
         });
 
         // TODO 3: Arrange the title, message, and control in a clean layout.
-        Pane root = new Pane( titleLabel, statusLabel, actionButton, marker);
+        Pane root = new Pane( titleLabel, statusLabel, actionButton, locationImage, marker);
         root.setPadding(new Insets(20));
 
         // TODO 4: Set the window title and size.
