@@ -11,7 +11,7 @@ public class PlayerGuess {
         this.guess_y = guess_y;
     }
 
-    public double pointTotal (){
-        return 5000.0-Math.sqrt(Math.pow((guess_x-correct.getX()), 2) + Math.pow((guess_y-correct.getY()), 2));
+    public int pointTotal (){
+        return 5000-(int)Math.sqrt(Math.pow((guess_x-correct.getX()), 2) + Math.pow((guess_y-correct.getY()), 2));
     }
 }
