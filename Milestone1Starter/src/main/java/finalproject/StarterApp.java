@@ -25,9 +25,9 @@ public class StarterApp extends Application {
         // TODO 1: Choose a simple app title and create a small root layout.
         Label titleLabel = new Label("CSSE220 Final Project");
         Label statusLabel = new Label("Starter app is ready.");
-        ImageView imageView = new ImageView();
-        imageView.setFitHeight(30);
-        imageView.setFitWidth(30);
+        ImageView marker = new ImageView();
+        marker.setFitHeight(30);
+        marker.setFitWidth(30);
 
         // TODO 2: Add your first interactive control (button, text field, etc.).
         Button actionButton = new Button("Tap to update status");
@@ -38,7 +38,7 @@ public class StarterApp extends Application {
         });
 
         // TODO 3: Arrange the title, message, and control in a clean layout.
-        Pane root = new Pane( titleLabel, statusLabel, actionButton, imageView);
+        Pane root = new Pane( titleLabel, statusLabel, actionButton, marker);
         root.setPadding(new Insets(20));
 
         // TODO 4: Set the window title and size.
@@ -50,11 +50,11 @@ public class StarterApp extends Application {
         scene.setOnMouseClicked(event -> {
             double x = event.getX();
             double y = event.getY();
-            imageView.setLayoutX(x-14);
-            imageView.setLayoutY(y-24);
+            marker.setLayoutX(x-14);
+            marker.setLayoutY(y-24);
             InputStream stream = getClass().getResourceAsStream("/images/BlackMarker.png");
             Image image = new Image(stream);
-            imageView.setImage(image);
+            marker.setImage(image);
         });
 
         // TODO 5: Replace this starter view with your real app design.
