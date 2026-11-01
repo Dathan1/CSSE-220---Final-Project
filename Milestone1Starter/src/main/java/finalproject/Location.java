@@ -26,5 +26,8 @@ public class Location {
         return image;
     }
 
-
+    @Override
+    public String toString() {
+        return "Location with image: " + this.getImage().toString() + " at x: " + this.getX() + ", y: " + this.getY();
+    }
 }
