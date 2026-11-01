@@ -55,19 +55,19 @@ public class StarterApp extends Application {
         submit.setLayoutY(110);
 
         // image
-        ImageView imageView = new ImageView();
-        imageView.setFitHeight(30);
-        imageView.setFitWidth(30);
+        ImageView marker = new ImageView();
+        marker.setFitHeight(30);
+        marker.setFitWidth(30);
 
         // background
         Rectangle back1 = new Rectangle(sw,sh,Color.rgb(128,0,0));
         back1.setOpacity(0.25);
 
         // layout
-        Pane menu = new Pane(title, start, imageView);
+        Pane menu = new Pane(title, start, marker);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, submit);
+        Pane game = new Pane(back1, submit, marker);
 
         // window
 
@@ -85,14 +85,14 @@ public class StarterApp extends Application {
         });
 
         // cursor
-        mainMenu.setOnMouseClicked(event -> {
+        gameMenu.setOnMouseClicked(event -> {
             double x = event.getX();
             double y = event.getY();
-            imageView.setLayoutX(x-14);
-            imageView.setLayoutY(y-24);
+            marker.setLayoutX(x-14);
+            marker.setLayoutY(y-24);
             InputStream stream = getClass().getResourceAsStream("/images/BlackMarker.png");
             Image image = new Image(stream);
-            imageView.setImage(image);
+            marker.setImage(image);
         });
     }
 
