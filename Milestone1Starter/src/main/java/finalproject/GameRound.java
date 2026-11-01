@@ -16,6 +16,7 @@ public class GameRound {
         if (locations == null) {
             createLocations();
         }
+        
     }
 
     private void createLocations() {

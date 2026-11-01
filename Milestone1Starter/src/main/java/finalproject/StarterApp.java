@@ -50,6 +50,11 @@ public class StarterApp extends Application {
 //            statusLabel.setLayoutY(30);
 //        });
 
+        Button confirm = new Button("Confirm");
+        confirm.setPrefSize(200,50);
+        confirm.setLayoutX(sw-400);
+        confirm.setLayoutY(sh-100);
+
         Button submit = new Button("Submit");
         submit.setLayoutX(210);
         submit.setLayoutY(110);
@@ -59,6 +64,16 @@ public class StarterApp extends Application {
         marker.setFitHeight(30);
         marker.setFitWidth(30);
 
+        ImageView map = new ImageView();
+        map.setFitHeight(300);
+        map.setFitWidth(600);
+        map.setLayoutX(sw - 600);
+        map.setLayoutY(sh-400);
+        InputStream stream = getClass().getResourceAsStream("/images/CampusMap.png");
+        Image image = new Image(stream);
+        map.setImage(image);
+
+
         // background
         Rectangle back1 = new Rectangle(sw,sh,Color.rgb(128,0,0));
         back1.setOpacity(0.25);
@@ -67,7 +82,7 @@ public class StarterApp extends Application {
         Pane menu = new Pane(title, start, marker);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, submit, marker);
+        Pane game = new Pane(back1, submit, marker,map, confirm);
 
         // window
 
@@ -75,24 +90,29 @@ public class StarterApp extends Application {
 
         Scene gameMenu = new Scene(game, sw, sh);
 
-        stage.setTitle("RosGuessr");
+        stage.setTitle("RoseGuessr");
         stage.setScene(mainMenu);
         stage.show();
 
         // start
         start.setOnAction(event -> {
             stage.setScene(gameMenu);
+            GameRound round = new GameRound();
+
         });
 
         // cursor
         gameMenu.setOnMouseClicked(event -> {
             double x = event.getX();
             double y = event.getY();
-            marker.setLayoutX(x-14);
-            marker.setLayoutY(y-24);
-            InputStream stream = getClass().getResourceAsStream("/images/BlackMarker.png");
-            Image image = new Image(stream);
-            marker.setImage(image);
+            if(true){
+                marker.setLayoutX(x-14);
+                marker.setLayoutY(y-24);
+                InputStream stream2 = getClass().getResourceAsStream("/images/BlackMarker.png");
+                Image image2 = new Image(stream2);
+                marker.setImage(image2);
+                marker.toFront();
+            }
         });
     }
 
