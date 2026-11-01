@@ -64,6 +64,12 @@ public class StarterApp extends Application {
         marker.setFitHeight(30);
         marker.setFitWidth(30);
 
+        ImageView location = new ImageView();
+        location.setFitWidth(1050);
+        location.setFitHeight(1000);
+        location.setLayoutY(25);
+        location.setLayoutX(25);
+
         ImageView map = new ImageView();
         map.setFitHeight(300);
         map.setFitWidth(600);
@@ -82,7 +88,7 @@ public class StarterApp extends Application {
         Pane menu = new Pane(title, start, marker);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, submit, marker,map, confirm);
+        Pane game = new Pane(back1, marker, map, confirm, location);
 
         // window
 
@@ -98,14 +104,14 @@ public class StarterApp extends Application {
         start.setOnAction(event -> {
             stage.setScene(gameMenu);
             GameRound round = new GameRound();
-
+            location.setImage(round.pickRandomLocation().getImage());
         });
 
         // cursor
         gameMenu.setOnMouseClicked(event -> {
             double x = event.getX();
             double y = event.getY();
-            if(true){
+            if(x > 1107 && y > 675 && y < 965){
                 marker.setLayoutX(x-14);
                 marker.setLayoutY(y-24);
                 InputStream stream2 = getClass().getResourceAsStream("/images/BlackMarker.png");

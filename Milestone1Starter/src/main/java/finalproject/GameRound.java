@@ -31,6 +31,7 @@ public class GameRound {
     public Location pickRandomLocation() {
         int num = (int)(Math.random() * LOCATION_NUM);
         return locations[num];
+
     }
 
     public int getPointsEarned() {
