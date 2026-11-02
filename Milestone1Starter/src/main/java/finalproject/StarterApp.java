@@ -120,12 +120,11 @@ public class StarterApp extends Application {
 
         confirm.setOnAction(event -> {
             if(marker.getLayoutY()!=0 && marker.getLayoutX()!=0) {
+                PlayerGuess guess = new PlayerGuess(current, marker.getLayoutX()-(sw-600), marker.getLayoutY()-(sh-400)); //fix math for finding point
+                pointsNum.setText(String.valueOf((Integer.valueOf(pointsNum.getText()) + guess.pointTotal())));
                 marker.setLayoutX(0);
                 marker.setLayoutY(0);
                 marker.setVisible(false);
-                PlayerGuess guess = new PlayerGuess(current, marker.getX(), marker.getY());
-                pointsNum.setText(String.valueOf((Integer.valueOf(pointsNum.getText()) + guess.pointTotal())));
-                //pointsNum.setText("clicked");
                 Location nextLocation = round.pickRandomLocation();
                 location.setImage(nextLocation.getImage());
             }
