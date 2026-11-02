@@ -124,7 +124,6 @@ public class StarterApp extends Application {
                 marker.setLayoutY(0);
                 marker.setVisible(false);
                 PlayerGuess guess = new PlayerGuess(current, marker.getX(), marker.getY());
-                System.out.println(guess.pointTotal());
                 pointsNum.setText(String.valueOf((Integer.valueOf(pointsNum.getText()) + guess.pointTotal())));
                 //pointsNum.setText("clicked");
                 Location nextLocation = round.pickRandomLocation();
