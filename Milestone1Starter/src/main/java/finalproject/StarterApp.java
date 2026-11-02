@@ -26,6 +26,12 @@ public class StarterApp extends Application {
     @Override
     public void start(Stage stage) {
         // screen size
+        double markerX=0;
+        double markerY=0;
+        GameRound round = new GameRound();
+        Location current;
+        current = round.pickRandomLocation();
+
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
         double sw = screen.getWidth();
         double sh = screen.getHeight();
@@ -34,6 +40,10 @@ public class StarterApp extends Application {
         Label title = new Label("RoseGuessr");
         title.setLayoutX(175);
         title.setLayoutY(10);
+
+        Label points = new Label("0");
+        points.setLayoutY(1200);
+        points.setLayoutY(400);
 
         Label statusLabel = new Label("");
         statusLabel.setLayoutX(10);
@@ -88,7 +98,7 @@ public class StarterApp extends Application {
         Pane menu = new Pane(title, start, marker);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, marker, map, confirm, location);
+        Pane game = new Pane(back1, marker, map, confirm, location, points);
 
         // window
 
@@ -103,8 +113,18 @@ public class StarterApp extends Application {
         // start
         start.setOnAction(event -> {
             stage.setScene(gameMenu);
-            GameRound round = new GameRound();
-            location.setImage(round.pickRandomLocation().getImage());
+            location.setImage(current.getImage());
+        });
+
+        confirm.setOnAction(event -> {
+            if(marker.getLayoutY()!=0 && marker.getLayoutX()!=0) {
+                marker.setLayoutX(0);
+                marker.setLayoutY(0);
+                marker.setVisible(false);
+                PlayerGuess guess = new PlayerGuess(current, marker.getX(), marker.getY());
+                Location nextLocation = round.pickRandomLocation();
+                location.setImage(nextLocation.getImage());
+            }
         });
 
         // cursor
@@ -112,6 +132,7 @@ public class StarterApp extends Application {
             double x = event.getX();
             double y = event.getY();
             if(x > 1107 && y > 675 && y < 965){
+                marker.setVisible(true);
                 marker.setLayoutX(x-14);
                 marker.setLayoutY(y-24);
                 InputStream stream2 = getClass().getResourceAsStream("/images/BlackMarker.png");
