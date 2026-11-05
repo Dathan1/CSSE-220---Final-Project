@@ -1,6 +1,9 @@
 package finalproject;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -9,6 +12,7 @@ public class GameRound {
     private static ArrayList<Location> locations = new ArrayList<>();
     private int roundNumber;
     private int pointsEarned;
+    Rectangle2D screen = Screen.getPrimary().getVisualBounds();
 
     public GameRound() {
         this.roundNumber = 1;
@@ -26,7 +30,7 @@ public class GameRound {
             InputStream stream = getClass().getResourceAsStream("/images/locations/Location" + i + ".jpeg");
             Image image = new Image(stream);
             //locations[i - 1] = new Location(image, 0, 0);   OLD ARRAY code
-            locations.add(new Location(image, 0, 0));
+            locations.add(new Location(image, screen.getWidth() - 600, screen.getHeight() - 400));
         }
     }
 
