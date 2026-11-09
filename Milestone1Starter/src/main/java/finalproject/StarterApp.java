@@ -100,6 +100,11 @@ public class StarterApp extends Application {
         menuButton.setLayoutY(0);
         menuButton.setLayoutX(sw-200);
 
+        Button finalMenuButton = new Button("Menu");
+        finalMenuButton.setPrefSize(200, 50);
+        finalMenuButton.setLayoutX(sw - 200);
+        finalMenuButton.setLayoutY(0);
+
         Button confirm = new Button("Confirm");
         confirm.setPrefSize(200,50);
         confirm.setLayoutX(sw-525);
@@ -174,7 +179,7 @@ public class StarterApp extends Application {
         //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
 
-        Pane finalScore = new Pane(menuButton);
+        Pane finalScore = new Pane(finalMenuButton);
 //add things such as total points, highest round score, highest single guess,
 
         Scene mainMenu = new Scene(menu, sw, sh);
@@ -186,11 +191,14 @@ public class StarterApp extends Application {
 
         stage.setTitle("RoseGuessr");
         stage.setScene(mainMenu);
+        //stage.setFullScreen(true);
+        //stage.setFullScreenExitHint("");
         stage.show();
 
         // start
         start.setOnAction(event -> {
             stage.setScene(gameMenu);
+            //stage.setFullScreen(true);
             location.setImage(current.getImage());
             pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
             locationNum.setText(String.valueOf((Integer.valueOf(round.get().getLocationNum()))));
@@ -229,6 +237,7 @@ public class StarterApp extends Application {
             }
             if(round.get().isRoundEnded()){
                 stage.setScene(finalMenu);
+                //stage.setFullScreen(true);
             }
 
         });
@@ -245,6 +254,13 @@ public class StarterApp extends Application {
 
         menuButton.setOnAction(event -> {
             stage.setScene(mainMenu);
+           // stage.setFullScreen(true);
+            round.set(new GameRound(locations));
+        });
+
+        finalMenuButton.setOnAction(event -> {
+            stage.setScene(mainMenu);
+            // stage.setFullScreen(true);
             round.set(new GameRound(locations));
         });
 
