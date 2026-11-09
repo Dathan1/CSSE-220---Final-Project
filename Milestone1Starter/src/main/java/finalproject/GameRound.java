@@ -30,7 +30,7 @@ public class GameRound {
             InputStream stream = getClass().getResourceAsStream("/images/locations/Location" + i + ".jpeg");
             Image image = new Image(stream);
             //locations[i - 1] = new Location(image, 0, 0);   OLD ARRAY code
-            locations.add(new Location(image, screen.getWidth() - 600, screen.getHeight() - 400));
+            locations.add(new Location(image,  400, 200));
         }
     }
 

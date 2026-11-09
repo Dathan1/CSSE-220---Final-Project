@@ -7,8 +7,11 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -104,8 +107,8 @@ public class StarterApp extends Application {
         ImageView map = new ImageView();
         map.setFitHeight(300);
         map.setFitWidth(600);
-        map.setLayoutX(sw - 600);
-        map.setLayoutY(sh - 400);
+        map.setLayoutX(0);
+        map.setLayoutY(0);
         InputStream stream = getClass().getResourceAsStream("/images/CampusMap.png");
         Image image = new Image(stream);
         map.setImage(image);
@@ -122,11 +125,22 @@ public class StarterApp extends Application {
         // layout
 //        StackPane mapPane  = new StackPane(map);
 //        mapPane.setAlignment(map, Pos.BOTTOM_CENTER);
+        Group mapContent = new Group(map, marker, correctMarker, guessLine);
+        Group scrollContent = new Group(mapContent);
+        ScrollPane mapZoom = new ScrollPane(scrollContent);
+        mapZoom.setPannable(true);
+        mapZoom.toFront();
+        mapZoom.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        mapZoom.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        mapZoom.setPrefSize(600,300);
+        mapZoom.setLayoutX(sw - 600);
+        mapZoom.setLayoutY(sh - 400);
+
         Pane menu = new Pane(title, start);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, marker, correctMarker, map, confirm, location, pointsNum, pointsString, next, guessLine);
-
+        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString, next, mapZoom);
+        //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
 
         Scene mainMenu = new Scene(menu, sw, sh);
@@ -172,16 +186,32 @@ public class StarterApp extends Application {
         });
         // cursor
         gameMenu.setOnMouseClicked(event -> {
-            Point2D mouse = game.sceneToLocal(event.getSceneX(), event.getSceneY());
-            double x = mouse.getX();
-            double y = mouse.getY();
-            if(x > 1107 && y > 675 && y < 965 && !confirmClicked.get()){ //if it's in the x/y of the map in bottom right
+            Point2D mapPoint = mapContent.sceneToLocal(event.getSceneX(), event.getSceneY());
+            if(map.getBoundsInParent().contains(mapPoint) && !confirmClicked.get()){
                 marker.setVisible(true);
-                marker.setLayoutX(x-marker.getFitWidth()/2);//sets the marker visible and places the point on tip of mouse
-                marker.setLayoutY(y-marker.getFitHeight());
+                marker.setLayoutX(mapPoint.getX() - marker.getFitWidth() / 2);
+                marker.setLayoutY(mapPoint.getY() - marker.getFitHeight());
                 marker.toFront();
             }
         });
+        //currently does not work if zoomed in too much
+
+//        mapZoom.setOnScroll(event -> {
+//            double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 1 / 1.1;
+//            double newScale = Math.clamp(mapContent.getScaleX() * zoomFactor, 1, 4.0);
+//            mapContent.setScaleX(newScale);
+//            mapContent.setScaleY(newScale);
+//            event.consume();
+//        });
+
+        mapZoom.addEventFilter(ScrollEvent.SCROLL, event -> {
+            double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 1 / 1.1;
+            double newScale = Math.clamp(mapContent.getScaleX() * zoomFactor, 1, 4.0);
+            mapContent.setScaleX(newScale);
+            mapContent.setScaleY(newScale);
+            event.consume();
+        });
+
     }
 
     public static void main(String[] args) {
