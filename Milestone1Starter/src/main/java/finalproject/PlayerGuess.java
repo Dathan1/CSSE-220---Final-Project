@@ -1,6 +1,6 @@
 package finalproject;
 
-public class PlayerGuess {
+public class PlayerGuess implements Scorable {
 //    Location correct;
     double correct_x;
     double correct_y;
@@ -13,7 +13,7 @@ public class PlayerGuess {
         this.guess_x = guess_x;
         this.guess_y = guess_y;
     }
-
+    @Override
     public int pointTotal (){
         return 6700-((int)Math.sqrt(Math.pow((guess_x-correct_x), 2) + Math.pow((guess_y-correct_y), 2)))*10;
     }

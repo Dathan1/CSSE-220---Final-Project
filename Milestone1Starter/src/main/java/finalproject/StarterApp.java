@@ -20,19 +20,26 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StarterApp extends Application {
-
-    @Override
     public void start(Stage stage) {
+        final ArrayList<Location> locations = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            InputStream stream = getClass().getResourceAsStream("/images/locations/Location" + i + ".jpeg");
+            Image image = new Image(stream);
+            locations.add(new Location(image,  400, 200));
+        }
+
+
         AtomicReference<Boolean> confirmClicked = new AtomicReference<>(false);
         // screen size
         double markerX=0;
         double markerY=0;
-        GameRound round = new GameRound();
+        AtomicReference<GameRound> round = new AtomicReference<>(new GameRound(locations));
         Location current;
-        current = round.pickRandomLocation();
+        current = round.get().pickRandomLocation();
 
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
         double sw = screen.getWidth();
@@ -54,6 +61,26 @@ public class StarterApp extends Application {
         pointsString.setLayoutY(400);
         pointsString.setFont(new Font(30));
 
+        Label roundString = new Label("Round Num: ");
+        roundString.setLayoutX(1300);
+        roundString.setLayoutY(300);
+        roundString.setFont(new Font(30));
+
+        Label roundNum = new Label("0");
+        roundNum.setLayoutX(1500);
+        roundNum.setLayoutY(300);
+        roundNum.setFont(new Font(30));
+
+        Label locationString = new Label("Location Num: ");
+        locationString.setLayoutX(1300);
+        locationString.setLayoutY(350);
+        locationString.setFont(new Font(30));
+
+        Label locationNum = new Label("0");
+        locationNum.setLayoutX(1500);
+        locationNum.setLayoutY(350);
+        locationNum.setFont(new Font(30));
+
         Label statusLabel = new Label("");
         statusLabel.setLayoutX(10);
         statusLabel.setLayoutY(30);
@@ -68,6 +95,10 @@ public class StarterApp extends Application {
 //            statusLabel.setLayoutX(10);
 //            statusLabel.setLayoutY(30);
 //        });
+        Button menuButton = new Button("Menu");
+        menuButton.setPrefSize(200,50);
+        menuButton.setLayoutY(0);
+        menuButton.setLayoutX(sw-200);
 
         Button confirm = new Button("Confirm");
         confirm.setPrefSize(200,50);
@@ -139,13 +170,19 @@ public class StarterApp extends Application {
         Pane menu = new Pane(title, start);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString, next, mapZoom);
+        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString,locationString,locationNum,roundString,roundNum, next, mapZoom, menuButton);
         //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
+
+        Pane finalScore = new Pane(menuButton);
+//add things such as total points, highest round score, highest single guess,
 
         Scene mainMenu = new Scene(menu, sw, sh);
 
         Scene gameMenu = new Scene(game, sw, sh);
+
+        Scene finalMenu = new Scene(finalScore,sw,sh);
+
 
         stage.setTitle("RoseGuessr");
         stage.setScene(mainMenu);
@@ -155,6 +192,10 @@ public class StarterApp extends Application {
         start.setOnAction(event -> {
             stage.setScene(gameMenu);
             location.setImage(current.getImage());
+            pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
+            locationNum.setText(String.valueOf((Integer.valueOf(round.get().getLocationNum()))));
+            roundNum.setText(String.valueOf((Integer.valueOf(round.get().getRoundNumber()))));
+
         });
 
         confirm.setOnAction(event -> {
@@ -167,22 +208,29 @@ public class StarterApp extends Application {
                 guessLine.setEndX(correctMarker.getLayoutX()+correctMarker.getFitWidth()/2);
                 guessLine.setEndY(correctMarker.getLayoutY()+correctMarker.getFitHeight());
                 guessLine.setVisible(true);
-                PlayerGuess guess = new PlayerGuess(guessLine.getEndX(), guessLine.getEndY(), marker.getLayoutX(), marker.getLayoutY()); //fix math for finding point
-                pointsNum.setText(String.valueOf((Integer.valueOf(pointsNum.getText()) + guess.pointTotal())));
+                PlayerGuess guess = new PlayerGuess(guessLine.getEndX(), guessLine.getEndY(), marker.getLayoutX(), marker.getLayoutY());
+                round.get().setPointsEarned(round.get().getPointsEarned()+ guess.pointTotal());
+                pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
             }
         });
 
         next.setOnAction(event -> {
-            if(confirmClicked.get()==true){
+             if (confirmClicked.get()==true){
                 marker.setLayoutX(0);
                 marker.setLayoutY(0);
                 marker.setVisible(false);
-                Location nextLocation = round.pickRandomLocation();
-                location.setImage(nextLocation.getImage());
+                location.setImage(round.get().nextLocation().getImage());
                 confirmClicked.set(false);
                 correctMarker.setVisible(false);
                 guessLine.setVisible(false);
+                locationNum.setText(String.valueOf(round.get().getLocationNum()));
+                roundNum.setText(String.valueOf(round.get().getRoundNumber()));
+
             }
+            if(round.get().isRoundEnded()){
+                stage.setScene(finalMenu);
+            }
+
         });
         // cursor
         gameMenu.setOnMouseClicked(event -> {
@@ -194,6 +242,12 @@ public class StarterApp extends Application {
                 marker.toFront();
             }
         });
+
+        menuButton.setOnAction(event -> {
+            stage.setScene(mainMenu);
+            round.set(new GameRound(locations));
+        });
+
         //currently does not work if zoomed in too much
 
 //        mapZoom.setOnScroll(event -> {
@@ -211,6 +265,7 @@ public class StarterApp extends Application {
             mapContent.setScaleY(newScale);
             event.consume();
         });
+
 
     }
 
