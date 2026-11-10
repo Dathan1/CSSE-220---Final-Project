@@ -3,6 +3,7 @@ package finalproject;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,7 +13,10 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -35,6 +39,9 @@ public class StarterApp extends Application {
 
         AtomicReference<Boolean> confirmClicked = new AtomicReference<>(false);
         // screen size
+        int highestRound = 0;
+        int closestGuess = 6400;
+        int totalPoints = 0;
         double markerX=0;
         double markerY=0;
         AtomicReference<GameRound> round = new AtomicReference<>(new GameRound(locations));
@@ -179,14 +186,29 @@ public class StarterApp extends Application {
         //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
 
-        Pane finalScore = new Pane(finalMenuButton);
+        Label HighestRoundScore = new Label("Highest Round Score: " + highestRound);
+        HighestRoundScore.setFont(new Font(30));
+
+        Label ClosestSingleGuess = new Label("Closest Guess: " + closestGuess + " meters");
+        ClosestSingleGuess.setFont(new Font(30));
+
+        Label TotalPoints = new Label("Total Points: " + totalPoints);
+        TotalPoints.setFont(new Font(30));
+
+        Pane score = new Pane(finalMenuButton);
+        VBox scores = new VBox(TotalPoints, HighestRoundScore, ClosestSingleGuess);
+        scores.setAlignment(Pos.BASELINE_CENTER);
+        //scores.prefHeightProperty().bind(score.heightProperty());
+        scores.prefWidthProperty().bind(score.widthProperty());
+
+        score.getChildren().add(scores);
 //add things such as total points, highest round score, highest single guess,
 
         Scene mainMenu = new Scene(menu, sw, sh);
 
         Scene gameMenu = new Scene(game, sw, sh);
 
-        Scene finalMenu = new Scene(finalScore,sw,sh);
+        Scene ScoreMenu = new Scene(score,sw,sh);
 
 
         stage.setTitle("RoseGuessr");
@@ -219,6 +241,7 @@ public class StarterApp extends Application {
                 PlayerGuess guess = new PlayerGuess(guessLine.getEndX(), guessLine.getEndY(), marker.getLayoutX(), marker.getLayoutY());
                 round.get().setPointsEarned(round.get().getPointsEarned()+ guess.pointTotal());
                 pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
+                mapContent.setScaleX(1); mapContent.setScaleY(1);
             }
         });
 
@@ -233,10 +256,10 @@ public class StarterApp extends Application {
                 guessLine.setVisible(false);
                 locationNum.setText(String.valueOf(round.get().getLocationNum()));
                 roundNum.setText(String.valueOf(round.get().getRoundNumber()));
-
+                mapContent.setScaleX(1); mapContent.setScaleY(1);
             }
             if(round.get().isRoundEnded()){
-                stage.setScene(finalMenu);
+                stage.setScene(ScoreMenu);
                 //stage.setFullScreen(true);
             }
 
