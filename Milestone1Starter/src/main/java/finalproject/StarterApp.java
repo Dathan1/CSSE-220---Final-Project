@@ -2,15 +2,16 @@ package finalproject;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.io.InputStream;
 
@@ -27,10 +28,10 @@ public class StarterApp extends Application {
         double sw = screen.getWidth();
         double sh = screen.getHeight();
       
-        // title
-        Label title = new Label("RoseGuessr");
-        title.setLayoutX(175);
-        title.setLayoutY(10);
+        // titleLabel
+        Label titleLabel = new Label("RoseGuessr");
+        titleLabel.setLayoutX(175);
+        titleLabel.setLayoutY(10);
 
         Label statusLabel = new Label("");
         statusLabel.setLayoutX(10);
@@ -57,11 +58,11 @@ public class StarterApp extends Application {
         marker.setFitWidth(30);
 
         // background
-        Rectangle back1 = new Rectangle(sw,sh,Color.rgb(128,0,0));
+        Rectangle back1 = new Rectangle(sw,sh, Color.rgb(128,0,0));
         back1.setOpacity(0.25);
 
         // layout
-        Pane menu = new Pane(title, start, marker);
+        Pane menu = new Pane(titleLabel, start, marker);
         menu.setPadding(new Insets(20));
 
         Pane game = new Pane(back1, submit, marker);
@@ -69,12 +70,13 @@ public class StarterApp extends Application {
         // window
 
         Scene mainMenu = new Scene(menu, sw, sh);
+        Scene gameMenu = new Scene(game, sw, sh);
 
-        // TODO 3: Arrange the title, message, and control in a clean layout.
-        Pane root = new Pane( titleLabel, statusLabel, actionButton, marker);
+        // TODO 3: Arrange the titleLabel, message, and control in a clean layout.
+        Pane root = new Pane( titleLabel, statusLabel, submit, marker);
         root.setPadding(new Insets(20));
 
-        // TODO 4: Set the window title and size.
+        // TODO 4: Set the window titleLabel and size.
         Scene scene = new Scene(root, 420, 220);
         stage.setTitle("CSSE220 Team Starter");
         stage.setScene(scene);
