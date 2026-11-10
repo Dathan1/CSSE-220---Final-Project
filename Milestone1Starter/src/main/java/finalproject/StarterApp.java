@@ -92,6 +92,14 @@ public class StarterApp extends Application {
         statusLabel.setLayoutX(10);
         statusLabel.setLayoutY(30);
 
+        Label HighestRoundScore = new Label("Highest Round Score: " + highestRound);
+        HighestRoundScore.setFont(new Font(30));
+
+        Label ClosestSingleGuess = new Label("Closest Guess: " + closestGuess + " meters");
+        ClosestSingleGuess.setFont(new Font(30));
+
+        Label TotalPoints = new Label("Total Points: " + totalPoints);
+        TotalPoints.setFont(new Font(30));
 
         // buttons
         Button start = new Button("Start");
@@ -109,8 +117,8 @@ public class StarterApp extends Application {
 
         Button finalMenuButton = new Button("Menu");
         finalMenuButton.setPrefSize(200, 50);
-        finalMenuButton.setLayoutX(sw - 200);
-        finalMenuButton.setLayoutY(0);
+        finalMenuButton.setLayoutX((sw/2)-100);
+        finalMenuButton.setLayoutY(sh - 500);
 
         Button confirm = new Button("Confirm");
         confirm.setPrefSize(200,50);
@@ -186,21 +194,10 @@ public class StarterApp extends Application {
         //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
 
-        Label HighestRoundScore = new Label("Highest Round Score: " + highestRound);
-        HighestRoundScore.setFont(new Font(30));
-
-        Label ClosestSingleGuess = new Label("Closest Guess: " + closestGuess + " meters");
-        ClosestSingleGuess.setFont(new Font(30));
-
-        Label TotalPoints = new Label("Total Points: " + totalPoints);
-        TotalPoints.setFont(new Font(30));
-
         Pane score = new Pane(finalMenuButton);
         VBox scores = new VBox(TotalPoints, HighestRoundScore, ClosestSingleGuess);
         scores.setAlignment(Pos.BASELINE_CENTER);
-        //scores.prefHeightProperty().bind(score.heightProperty());
         scores.prefWidthProperty().bind(score.widthProperty());
-
         score.getChildren().add(scores);
 //add things such as total points, highest round score, highest single guess,
 
