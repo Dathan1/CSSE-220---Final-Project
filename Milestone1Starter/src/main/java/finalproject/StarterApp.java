@@ -23,9 +23,6 @@ public class StarterApp extends Application {
         // screen size
         double markerX=0;
         double markerY=0;
-        GameRound round = new GameRound();
-        Location current;
-        current = round.pickRandomLocation();
 
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
         double sw = screen.getWidth();
