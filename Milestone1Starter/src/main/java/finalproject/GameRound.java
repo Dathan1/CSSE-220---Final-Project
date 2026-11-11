@@ -1,33 +1,38 @@
 package finalproject;
-
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GameRound {
-    private static final int LOCATION_NUM = 30;
-    private static ArrayList<Location> locations = new ArrayList<>();
+    private static int LOCATION_NUM = 30;
+    private ArrayList<Location> locations = new ArrayList<>();
     private int roundNumber;
     private int pointsEarned;
+    private int locationNum;
+    private boolean roundEnded = true;
+    Rectangle2D screen = Screen.getPrimary().getVisualBounds();
 
-    public GameRound() {
+    public GameRound(ArrayList<Location> locations) {
+        this.locations = locations;
         this.roundNumber = 1;
         this.pointsEarned = 0;
-
-        if (locations.isEmpty()) {
-            createLocations();
-        }
+        this.locationNum = 1;
+        this.roundEnded = false;
         
     }
 
-    private void createLocations() {
-        //locations = new ArrayList<>(LOCATION_NUM);
-        for (int i = 1; i <= LOCATION_NUM; i++) {
-            InputStream stream = getClass().getResourceAsStream("/images/locations/Location" + i + ".jpeg");
-            Image image = new Image(stream);
-            //locations[i - 1] = new Location(image, 0, 0);   OLD ARRAY code
-            locations.add(new Location(image, 0, 0));
+    public Location nextLocation(){
+        locationNum+=1;
+        if(locationNum >3){
+            roundNumber +=1;
+            locationNum=1;
         }
+        if(roundNumber >3){
+            roundEnded = true;
+        }
+        return pickRandomLocation();
     }
 
     public Location pickRandomLocation() {
@@ -36,6 +41,9 @@ public class GameRound {
         locations.remove(num);
         return tempLocation;
     }
+
+
+
 
     public int getPointsEarned() {
         return this.pointsEarned;
@@ -49,9 +57,15 @@ public class GameRound {
         return this.roundNumber;
     }
 
+    public int getLocationNum(){
+        return locationNum;
+    }
+
     public void setPointsEarned(int num) {
         this.pointsEarned = num;
     }
 
-
+    public boolean isRoundEnded() {
+        return roundEnded;
+    }
 }
