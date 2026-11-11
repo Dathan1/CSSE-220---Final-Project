@@ -53,10 +53,10 @@ public class StarterApp extends Application {
         double sh = screen.getHeight();
 
         // title
-        Label title = new Label("RoseGuessr");
-        title.setLayoutX(175);
-        title.setLayoutY(10);
-        title.setFont(new Font(30));
+        Label title = new Label("oseGuessr");
+        title.setTranslateX(65);
+        title.setTranslateY(-150);
+        title.setFont(new Font(100));
 
         Label pointsNum = new Label("0");
         pointsNum.setLayoutX(1400);
@@ -103,8 +103,7 @@ public class StarterApp extends Application {
 
         // buttons
         Button start = new Button("Start");
-        start.setLayoutX(210);
-        start.setLayoutY(110);
+        start.setPrefSize(200,50);
 
         Button menuButton = new Button("Menu");
         menuButton.setPrefSize(200,50);
@@ -160,6 +159,13 @@ public class StarterApp extends Application {
         Image image = new Image(stream);
         map.setImage(image);
 
+        ImageView rose = new ImageView();
+        rose.setTranslateX(-218);
+        rose.setTranslateY(-183);
+        InputStream stream2 = getClass().getResourceAsStream("/images/RoseHulmanLogo.png");
+        Image logo = new Image(stream2);
+        rose.setImage(logo);
+
         Line guessLine = new Line();
         guessLine.setVisible(false);
         guessLine.setStroke(Color.BLUE);
@@ -183,10 +189,10 @@ public class StarterApp extends Application {
         mapZoom.setLayoutX(sw - 600);
         mapZoom.setLayoutY(sh - 400);
 
-        Pane menu = new Pane(title, start);
+        StackPane menu = new StackPane(title, start, rose);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString,locationString,locationNum,roundString,roundNum, next, mapZoom, menuButton);
+        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString,locationString,locationNum,roundString,roundNum, mapZoom, menuButton);
         //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
 
@@ -236,6 +242,7 @@ public class StarterApp extends Application {
                 pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
                 mapContent.setScaleX(1); mapContent.setScaleY(1);
             }
+            game.getChildren().add(next);
         });
 
         next.setOnAction(event -> {
@@ -250,6 +257,7 @@ public class StarterApp extends Application {
                 locationNum.setText(String.valueOf(round.get().getLocationNum()));
                 roundNum.setText(String.valueOf(round.get().getRoundNumber()));
                 mapContent.setScaleX(1); mapContent.setScaleY(1);
+                game.getChildren().remove(next);
             }
             if(round.get().isRoundEnded()){
                 stage.setScene(ScoreMenu);
