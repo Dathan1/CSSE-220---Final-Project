@@ -2,14 +2,18 @@ package finalproject;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
@@ -32,10 +36,10 @@ public class StarterApp extends Application {
         double sh = screen.getHeight();
 
         // title
-        Label title = new Label("RoseGuessr");
-        title.setLayoutX(175);
-        title.setLayoutY(10);
-        title.setFont(new Font(30));
+        Label title = new Label("oseGuessr");
+        title.setFont(new Font(100));
+        title.setTranslateX(58);
+        title.setTranslateY(-150);
 
         Label pointsNum = new Label("0");
         pointsNum.setLayoutX(1400);
@@ -54,8 +58,7 @@ public class StarterApp extends Application {
 
         // buttons
         Button start = new Button("Start");
-        start.setLayoutX(210);
-        start.setLayoutY(110);
+        start.setPrefSize(200,50);
 //        start.setOnAction(event -> {
 //            statusLabel.setText("");
 //            statusLabel.setLayoutX(10);
@@ -91,13 +94,19 @@ public class StarterApp extends Application {
         Image image = new Image(stream);
         map.setImage(image);
 
+        ImageView rose = new ImageView();
+        rose.setTranslateY(-176);
+        rose.setTranslateX(-232);
+        InputStream logo = getClass().getResourceAsStream("/images/RoseHulmanLogo.png");
+        Image r = new Image(logo);
+        rose.setImage(r);
 
         // background
         Rectangle back1 = new Rectangle(sw,sh,Color.rgb(128,0,0));
         back1.setOpacity(0.25);
 
         // layout
-        Pane menu = new Pane(title, start, marker);
+        StackPane menu = new StackPane(title, start, rose);
         menu.setPadding(new Insets(20));
 
         Pane game = new Pane(back1, marker, map, confirm, location, pointsNum, pointsString);
