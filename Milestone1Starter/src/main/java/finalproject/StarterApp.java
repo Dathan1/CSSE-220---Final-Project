@@ -105,11 +105,7 @@ public class StarterApp extends Application {
         Button start = new Button("Start");
         start.setLayoutX(210);
         start.setLayoutY(110);
-//        start.setOnAction(event -> {
-//            statusLabel.setText("");
-//            statusLabel.setLayoutX(10);
-//            statusLabel.setLayoutY(30);
-//        });
+
         Button menuButton = new Button("Menu");
         menuButton.setPrefSize(200,50);
         menuButton.setLayoutY(0);
