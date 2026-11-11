@@ -1,6 +1,7 @@
 package finalproject;
 
 import javafx.application.Application;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -12,31 +13,76 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StarterApp extends Application {
-    public void start(Stage stage) {
-        final ArrayList<Location> locations = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
-            InputStream stream = getClass().getResourceAsStream("/images/locations/Location" + i + ".jpeg");
-            Image image = new Image(stream);
-            locations.add(new Location(image,  400, 200));
+    public void start(Stage stage){
+        Image mapImage = new Image(getClass().getResourceAsStream("/images/CampusMap.png"));
+        double mapWidth = 600;
+        double mapHeight = mapWidth * mapImage.getHeight() / mapImage.getWidth();
+        String locationData;
+        try (InputStream stream = getClass().getResourceAsStream("/LocationData.txt")) {
+            if (stream == null) {
+                throw new IOException("Could not find /LocationData.txt on the classpath.");
+            }
+            locationData = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not read location data.", e);
         }
 
+        String[] locationLines = locationData.split("\\R");
+        final ArrayList<Location> locations = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            String line = locationLines[i - 1].trim();
+            if (line.isEmpty() || line.equalsIgnoreCase("Not within bounds")) {
+                continue;
+            }
 
+            String[] coordinates = line.split(",");
+            if (coordinates.length != 2) {
+                throw new IllegalStateException("Invalid location data on line " + i + ": " + line);
+            }
+
+            double x;
+            double y;
+            try {
+                x = Double.parseDouble(coordinates[0].trim());
+                y = Double.parseDouble(coordinates[1].trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalStateException();
+            }
+            if (!Double.isFinite(x) || !Double.isFinite(y) || x < 0 || x > 1 || y < 0 || y > 1) {
+                throw new IllegalStateException();
+            }
+
+            InputStream imageStream = getClass().getResourceAsStream(
+                    "/images/locations/Location" + i + ".jpeg");
+            if (imageStream == null) {
+                throw new IllegalStateException();
+            }
+            try (imageStream) {
+                locations.add(new Location(new Image(imageStream), mapWidth * x, mapHeight * y));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
         AtomicReference<Boolean> confirmClicked = new AtomicReference<>(false);
         // screen size
         int highestRound = 0;
@@ -45,8 +91,8 @@ public class StarterApp extends Application {
         double markerX=0;
         double markerY=0;
         AtomicReference<GameRound> round = new AtomicReference<>(new GameRound(locations));
-        Location current;
-        current = round.get().pickRandomLocation();
+        AtomicReference<Location> current = new AtomicReference<>();
+        current.set(round.get().pickRandomLocation());
 
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
         double sw = screen.getWidth();
@@ -141,8 +187,8 @@ public class StarterApp extends Application {
         correctMarker.setFitWidth(30);
         correctMarker.setFitHeight(30);
         correctMarker.setVisible(false);
-        correctMarker.setLayoutY(current.getY());
-        correctMarker.setLayoutX(current.getX());
+        correctMarker.setLayoutY(current.get().getY() - correctMarker.getFitHeight());
+        correctMarker.setLayoutX(current.get().getX() - correctMarker.getFitWidth() / 2);
         marker.toFront();
 
         ImageView location = new ImageView();
@@ -152,13 +198,12 @@ public class StarterApp extends Application {
         location.setLayoutX(25);
 
         ImageView map = new ImageView();
-        map.setFitHeight(300);
-        map.setFitWidth(600);
+        map.setFitHeight(mapHeight);
+        map.setFitWidth(mapWidth);
+        map.setPreserveRatio(true);
         map.setLayoutX(0);
         map.setLayoutY(0);
-        InputStream stream = getClass().getResourceAsStream("/images/CampusMap.png");
-        Image image = new Image(stream);
-        map.setImage(image);
+        map.setImage(mapImage);
 
         Line guessLine = new Line();
         guessLine.setVisible(false);
@@ -173,15 +218,17 @@ public class StarterApp extends Application {
 //        StackPane mapPane  = new StackPane(map);
 //        mapPane.setAlignment(map, Pos.BOTTOM_CENTER);
         Group mapContent = new Group(map, marker, correctMarker, guessLine);
+        Scale mapScale = new Scale(1, 1, 0, 0);
+        mapContent.getTransforms().add(mapScale);
         Group scrollContent = new Group(mapContent);
         ScrollPane mapZoom = new ScrollPane(scrollContent);
         mapZoom.setPannable(true);
         mapZoom.toFront();
         mapZoom.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         mapZoom.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        mapZoom.setPrefSize(600,300);
-        mapZoom.setLayoutX(sw - 600);
-        mapZoom.setLayoutY(sh - 400);
+        mapZoom.setPrefSize(mapWidth, mapHeight);
+        mapZoom.setLayoutX(sw - mapWidth);
+        mapZoom.setLayoutY(sh - mapHeight - 100);
 
         Pane menu = new Pane(title, start);
         menu.setPadding(new Insets(20));
@@ -214,7 +261,7 @@ public class StarterApp extends Application {
         start.setOnAction(event -> {
             stage.setScene(gameMenu);
             //stage.setFullScreen(true);
-            location.setImage(current.getImage());
+            location.setImage(current.get().getImage());
             pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
             locationNum.setText(String.valueOf((Integer.valueOf(round.get().getLocationNum()))));
             roundNum.setText(String.valueOf((Integer.valueOf(round.get().getRoundNumber()))));
@@ -222,6 +269,7 @@ public class StarterApp extends Application {
         });
 
         confirm.setOnAction(event -> {
+            System.out.println(mapHeight);
             if(marker.getLayoutY()!=0 && marker.getLayoutX()!=0 && !confirmClicked.get()) {
                 correctMarker.setVisible(true);
                 correctMarker.toFront();
@@ -231,10 +279,17 @@ public class StarterApp extends Application {
                 guessLine.setEndX(correctMarker.getLayoutX()+correctMarker.getFitWidth()/2);
                 guessLine.setEndY(correctMarker.getLayoutY()+correctMarker.getFitHeight());
                 guessLine.setVisible(true);
-                PlayerGuess guess = new PlayerGuess(guessLine.getEndX(), guessLine.getEndY(), marker.getLayoutX(), marker.getLayoutY());
+                PlayerGuess guess = new PlayerGuess(
+                        guessLine.getEndX(),
+                        guessLine.getEndY(),
+                        marker.getLayoutX() + marker.getFitWidth() / 2,
+                        marker.getLayoutY() + marker.getFitHeight());
                 round.get().setPointsEarned(round.get().getPointsEarned()+ guess.pointTotal());
                 pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
-                mapContent.setScaleX(1); mapContent.setScaleY(1);
+                mapScale.setX(1);
+                mapScale.setY(1);
+                mapZoom.setHvalue(mapZoom.getHmin());
+                mapZoom.setVvalue(mapZoom.getVmin());
             }
         });
 
@@ -243,13 +298,19 @@ public class StarterApp extends Application {
                 marker.setLayoutX(0);
                 marker.setLayoutY(0);
                 marker.setVisible(false);
-                location.setImage(round.get().nextLocation().getImage());
+                current.set(round.get().nextLocation());
+                location.setImage(current.get().getImage());
                 confirmClicked.set(false);
                 correctMarker.setVisible(false);
+                correctMarker.setLayoutY(current.get().getY() - correctMarker.getFitHeight());
+                correctMarker.setLayoutX(current.get().getX() - correctMarker.getFitWidth() / 2);
                 guessLine.setVisible(false);
                 locationNum.setText(String.valueOf(round.get().getLocationNum()));
                 roundNum.setText(String.valueOf(round.get().getRoundNumber()));
-                mapContent.setScaleX(1); mapContent.setScaleY(1);
+                mapScale.setX(1);
+                mapScale.setY(1);
+                mapZoom.setHvalue(mapZoom.getHmin());
+                mapZoom.setVvalue(mapZoom.getVmin());
             }
             if(round.get().isRoundEnded()){
                 stage.setScene(ScoreMenu);
@@ -259,12 +320,14 @@ public class StarterApp extends Application {
         });
         // cursor
         gameMenu.setOnMouseClicked(event -> {
-            Point2D mapPoint = mapContent.sceneToLocal(event.getSceneX(), event.getSceneY());
-            if(map.getBoundsInParent().contains(mapPoint) && !confirmClicked.get()){
-                marker.setVisible(true);
-                marker.setLayoutX(mapPoint.getX() - marker.getFitWidth() / 2);
-                marker.setLayoutY(mapPoint.getY() - marker.getFitHeight());
-                marker.toFront();
+            if(event.getButton()== MouseButton.PRIMARY) {
+                Point2D mapPoint = mapContent.sceneToLocal(event.getSceneX(), event.getSceneY());
+                if (map.getBoundsInParent().contains(mapPoint) && !confirmClicked.get()) {
+                    marker.setVisible(true);
+                    marker.setLayoutX(mapPoint.getX() - marker.getFitWidth() / 2);
+                    marker.setLayoutY(mapPoint.getY() - marker.getFitHeight());
+                    marker.toFront();
+                }
             }
         });
 
@@ -280,21 +343,39 @@ public class StarterApp extends Application {
             round.set(new GameRound(locations));
         });
 
-        //currently does not work if zoomed in too much
-
-//        mapZoom.setOnScroll(event -> {
-//            double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 1 / 1.1;
-//            double newScale = Math.clamp(mapContent.getScaleX() * zoomFactor, 1, 4.0);
-//            mapContent.setScaleX(newScale);
-//            mapContent.setScaleY(newScale);
-//            event.consume();
-//        });
 
         mapZoom.addEventFilter(ScrollEvent.SCROLL, event -> {
             double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 1 / 1.1;
-            double newScale = Math.clamp(mapContent.getScaleX() * zoomFactor, 1, 4.0);
-            mapContent.setScaleX(newScale);
-            mapContent.setScaleY(newScale);
+            double oldScale = mapScale.getX();
+            double newScale = Math.clamp(oldScale * zoomFactor, 1, 4.0);
+            if (newScale == oldScale) {
+                event.consume();
+                return;
+            }
+
+            Point2D anchor = mapContent.sceneToLocal(event.getSceneX(), event.getSceneY());
+            mapScale.setX(newScale);
+            mapScale.setY(newScale);
+            mapZoom.applyCss();
+            mapZoom.layout();
+
+            Point2D movedAnchor = mapContent.localToScene(anchor);
+            double scrollDeltaX = movedAnchor.getX() - event.getSceneX();
+            double scrollDeltaY = movedAnchor.getY() - event.getSceneY();
+            Bounds contentBounds = scrollContent.getBoundsInLocal();
+            Bounds viewport = mapZoom.getViewportBounds();
+            double maxScrollX = Math.max(0, contentBounds.getWidth() - viewport.getWidth());
+            double maxScrollY = Math.max(0, contentBounds.getHeight() - viewport.getHeight());
+            double hRange = mapZoom.getHmax() - mapZoom.getHmin();
+            double vRange = mapZoom.getVmax() - mapZoom.getVmin();
+            double currentScrollX = hRange == 0 ? 0
+                    : (mapZoom.getHvalue() - mapZoom.getHmin()) / hRange * maxScrollX;
+            double currentScrollY = vRange == 0 ? 0
+                    : (mapZoom.getVvalue() - mapZoom.getVmin()) / vRange * maxScrollY;
+            mapZoom.setHvalue(mapZoom.getHmin() + Math.clamp((currentScrollX + scrollDeltaX)
+                    / Math.max(1, maxScrollX), 0, 1) * hRange);
+            mapZoom.setVvalue(mapZoom.getVmin() + Math.clamp((currentScrollY + scrollDeltaY)
+                    / Math.max(1, maxScrollY), 0, 1) * vRange);
             event.consume();
         });
 
