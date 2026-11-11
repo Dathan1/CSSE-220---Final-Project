@@ -12,13 +12,17 @@ public class GameRound {
     private int pointsEarned;
     private int locationNum;
     private boolean roundEnded = true;
+    private int maxPoints;
+    private int closestGuess;
     Rectangle2D screen = Screen.getPrimary().getVisualBounds();
 
     public GameRound(ArrayList<Location> locations) {
         this.locations = locations;
         this.roundNumber = 1;
         this.pointsEarned = 0;
+        this.maxPoints = 0;
         this.locationNum = 1;
+        this.closestGuess = 6400;
         this.roundEnded = false;
         
     }
@@ -68,4 +72,8 @@ public class GameRound {
     public boolean isRoundEnded() {
         return roundEnded;
     }
+    public int getMaxPoints(){return maxPoints;}
+    public void setMaxPoints(int maxPoints){this.maxPoints = maxPoints;}
+    public int getClosestGuess(){return closestGuess;}
+    public void setClosestGuess(int closestGuess){this.closestGuess = closestGuess;}
 }

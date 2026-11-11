@@ -17,5 +17,7 @@ public class PlayerGuess implements Scorable {
     public int pointTotal (){
         return 6700-((int)Math.sqrt(Math.pow((guess_x-correct_x), 2) + Math.pow((guess_y-correct_y), 2)))*10;
     }
-
+    public int distance (){
+        return ((int)Math.sqrt(Math.pow((guess_x-correct_x), 2) + Math.pow((guess_y-correct_y), 2)))*10;
+    }
 }
