@@ -265,7 +265,6 @@ public class StarterApp extends Application {
         });
 
         confirm.setOnAction(event -> {
-            System.out.println(mapHeight);
             if(marker.getLayoutY()!=0 && marker.getLayoutX()!=0 && !confirmClicked.get()) {
                 correctMarker.setVisible(true);
                 correctMarker.toFront();
