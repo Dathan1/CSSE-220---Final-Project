@@ -29,13 +29,10 @@ public class GameRound {
 
     public Location nextLocation(){
         locationNum+=1;
-        if(locationNum >3){
-            roundNumber +=1;
-            locationNum=1;
+        if(locationNum >10){
+            roundEnded=true;
         }
-        if(roundNumber >3){
-            roundEnded = true;
-        }
+
         return pickRandomLocation();
     }
 

@@ -1,23 +1,35 @@
 package finalproject;
 
 public class PlayerGuess implements Scorable {
-//    Location correct;
-    double correct_x;
-    double correct_y;
-    double guess_x;
-    double guess_y;
+    private static final int MAX_POINTS = 6700;
+    private static final double DISTANCE_PENALTY = 5;
 
-    public PlayerGuess(double correctX, double correctY, double guess_x, double guess_y){
-        this.correct_x = correctX;
-        this.correct_y = correctY;
-        this.guess_x = guess_x;
-        this.guess_y = guess_y;
+    private final double correctX;
+    private final double correctY;
+    private final double guessX;
+    private final double guessY;
+    private final double mapDiagonal;
+
+    public PlayerGuess(double correctX, double correctY, double guessX, double guessY,
+                       double mapWidth, double mapHeight) {
+        this.correctX = correctX;
+        this.correctY = correctY;
+        this.guessX = guessX;
+        this.guessY = guessY;
+        this.mapDiagonal = Math.hypot(mapWidth, mapHeight);
     }
+
     @Override
-    public int pointTotal (){
-        return 6700-((int)Math.sqrt(Math.pow((guess_x-correct_x), 2) + Math.pow((guess_y-correct_y), 2)))*10;
+    public int pointTotal() {
+        double normalizedDistance = pixelDistance() / mapDiagonal;
+        return (int) Math.round(MAX_POINTS * Math.exp(-DISTANCE_PENALTY * normalizedDistance));
     }
-    public int distance (){
-        return ((int)Math.sqrt(Math.pow((guess_x-correct_x), 2) + Math.pow((guess_y-correct_y), 2)))*10;
+
+    public int distance() {
+        return (int) Math.round(pixelDistance() * 10);
+    }
+
+    private double pixelDistance() {
+        return Math.hypot(guessX - correctX, guessY - correctY);
     }
 }

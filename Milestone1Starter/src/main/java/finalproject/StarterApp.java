@@ -102,6 +102,14 @@ public class StarterApp extends Application {
         title.setTranslateY(-150);
         title.setFont(new Font(100));
 
+
+
+        Label instructions = new Label("Try to guess where this location is on \n       the Rose-Hulman Campus ");
+        instructions.setFont(new Font(30));
+        instructions.setLayoutX(1160);
+        instructions.setLayoutY(600);
+        //instructions.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8px;");
+
         Label pointsNum = new Label("0");
         pointsNum.setLayoutX(1400);
         pointsNum.setLayoutY(400);
@@ -112,15 +120,6 @@ public class StarterApp extends Application {
         pointsString.setLayoutY(400);
         pointsString.setFont(new Font(30));
 
-        Label roundString = new Label("Round Num: ");
-        roundString.setLayoutX(1300);
-        roundString.setLayoutY(300);
-        roundString.setFont(new Font(30));
-
-        Label roundNum = new Label("0");
-        roundNum.setLayoutX(1500);
-        roundNum.setLayoutY(300);
-        roundNum.setFont(new Font(30));
 
         Label locationString = new Label("Location Num: ");
         locationString.setLayoutX(1300);
@@ -132,11 +131,16 @@ public class StarterApp extends Application {
         locationNum.setLayoutY(350);
         locationNum.setFont(new Font(30));
 
+
+
         Label statusLabel = new Label("");
         statusLabel.setLayoutX(10);
         statusLabel.setLayoutY(30);
         Label HighestRoundScore = new Label("Highest Round Score: " + round.get().getMaxPoints());
         HighestRoundScore.setFont(new Font(30));
+
+        Label thanksLabel = new Label("Thanks For Playing");
+        thanksLabel.setFont(new Font(80));
 
         Label ClosestSingleGuess = new Label("Closest Guess: " + round.get().getClosestGuess() + " meters");
         ClosestSingleGuess.setFont(new Font(30));
@@ -156,7 +160,7 @@ public class StarterApp extends Application {
         Button finalMenuButton = new Button("Menu");
         finalMenuButton.setPrefSize(200, 50);
         finalMenuButton.setLayoutX((sw/2)-100);
-        finalMenuButton.setLayoutY(sh - 500);
+        finalMenuButton.setLayoutY(sh - 800);
 
         Button confirm = new Button("Confirm");
         confirm.setPrefSize(200,50);
@@ -174,8 +178,8 @@ public class StarterApp extends Application {
 
         // image
         ImageView marker = new ImageView( new Image(getClass().getResourceAsStream("/images/BlackMarker.png")));
-        marker.setFitHeight(30);
-        marker.setFitWidth(30);
+        marker.setFitWidth(14);
+        marker.setFitHeight(24);
         marker.setVisible(false);
         marker.toFront();//pushes marker to front to ensure in front of mouse
 
@@ -220,7 +224,11 @@ public class StarterApp extends Application {
         // layout
 //        StackPane mapPane  = new StackPane(map);
 //        mapPane.setAlignment(map, Pos.BOTTOM_CENTER);
-        Group mapContent = new Group(map, marker, correctMarker, guessLine);
+        Pane mapContent = new Pane(map, marker, correctMarker, guessLine);
+        mapContent.setMinSize(mapWidth, mapHeight);
+        mapContent.setPrefSize(mapWidth, mapHeight);
+        mapContent.setMaxSize(mapWidth, mapHeight);
+        mapContent.resize(mapWidth, mapHeight);
         Scale mapScale = new Scale(1, 1, 0, 0);
         mapContent.getTransforms().add(mapScale);
         Group scrollContent = new Group(mapContent);
@@ -236,12 +244,9 @@ public class StarterApp extends Application {
         StackPane menu = new StackPane(title, start, rose);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString,locationString,locationNum,roundString,roundNum, mapZoom, menuButton);
-        //temporarily moving marker, correctMarker, and guessLine to mapContent
-        // window
-
+        Pane game = new Pane(back1, instructions,confirm, next, location, pointsNum, pointsString,locationString,locationNum, mapZoom, menuButton);
         Pane score = new Pane(finalMenuButton);
-        VBox scores = new VBox(TotalPoints, HighestRoundScore, ClosestSingleGuess);
+        VBox scores = new VBox(thanksLabel, TotalPoints, HighestRoundScore, ClosestSingleGuess);
         scores.setAlignment(Pos.BASELINE_CENTER);
         scores.prefWidthProperty().bind(score.widthProperty());
         score.getChildren().add(scores);
@@ -267,12 +272,10 @@ public class StarterApp extends Application {
             location.setImage(current.get().getImage());
             pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
             locationNum.setText(String.valueOf((Integer.valueOf(round.get().getLocationNum()))));
-            roundNum.setText(String.valueOf((Integer.valueOf(round.get().getRoundNumber()))));
 
         });
 
         confirm.setOnAction(event -> {
-            System.out.println(mapHeight);
             if(marker.getLayoutY()!=0 && marker.getLayoutX()!=0 && !confirmClicked.get()) {
                 correctMarker.setVisible(true);
                 correctMarker.toFront();
@@ -286,7 +289,9 @@ public class StarterApp extends Application {
                         guessLine.getEndX(),
                         guessLine.getEndY(),
                         marker.getLayoutX() + marker.getFitWidth() / 2,
-                        marker.getLayoutY() + marker.getFitHeight());
+                        marker.getLayoutY() + marker.getFitHeight(),
+                        mapWidth,
+                        mapHeight);
                 round.get().setPointsEarned(round.get().getPointsEarned()+ guess.pointTotal());
                 if (guess.pointTotal() > round.get().getMaxPoints()){round.get().setMaxPoints(guess.pointTotal());}
                 if (guess.distance() < round.get().getClosestGuess()){round.get().setClosestGuess(guess.distance());}
@@ -295,8 +300,9 @@ public class StarterApp extends Application {
                 mapScale.setY(1);
                 mapZoom.setHvalue(mapZoom.getHmin());
                 mapZoom.setVvalue(mapZoom.getVmin());
+                next.setVisible(true);
             }
-            game.getChildren().add(next);
+
         });
 
         next.setOnAction(event -> {
@@ -312,12 +318,11 @@ public class StarterApp extends Application {
                 correctMarker.setLayoutX(current.get().getX() - correctMarker.getFitWidth() / 2);
                 guessLine.setVisible(false);
                 locationNum.setText(String.valueOf(round.get().getLocationNum()));
-                roundNum.setText(String.valueOf(round.get().getRoundNumber()));
                 mapScale.setX(1);
                 mapScale.setY(1);
                 mapZoom.setHvalue(mapZoom.getHmin());
                 mapZoom.setVvalue(mapZoom.getVmin());
-                game.getChildren().remove(next);
+                next.setVisible(false);
             }
             if(round.get().isRoundEnded()){
                 HighestRoundScore.setText("Highest Round Score: " + round.get().getMaxPoints());
@@ -335,8 +340,8 @@ public class StarterApp extends Application {
                 Point2D mapPoint = mapContent.sceneToLocal(event.getSceneX(), event.getSceneY());
                 if (map.getBoundsInParent().contains(mapPoint) && !confirmClicked.get()) {
                     marker.setVisible(true);
-                    marker.setLayoutX(mapPoint.getX() - marker.getFitWidth() / 2);
-                    marker.setLayoutY(mapPoint.getY() - marker.getFitHeight());
+                    marker.setLayoutX(Math.clamp(mapPoint.getX() - marker.getFitWidth() / 2, 0, mapWidth - marker.getFitWidth()));
+                    marker.setLayoutY(Math.clamp(mapPoint.getY() - marker.getFitHeight(), 0, mapHeight - marker.getFitHeight()));
                     marker.toFront();
                 }
             }
