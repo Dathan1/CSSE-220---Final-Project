@@ -345,7 +345,12 @@ public class StarterApp extends Application {
 
 
         mapZoom.addEventFilter(ScrollEvent.SCROLL, event -> {
-            double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 1 / 1.1;
+            double zoomFactor;
+            if (event.getDeltaY() > 0) {
+                zoomFactor = 1.1;
+            } else {
+                zoomFactor = 1 / 1.1;
+            }
             double oldScale = mapScale.getX();
             double newScale = Math.clamp(oldScale * zoomFactor, 1, 4.0);
             if (newScale == oldScale) {
@@ -368,10 +373,18 @@ public class StarterApp extends Application {
             double maxScrollY = Math.max(0, contentBounds.getHeight() - viewport.getHeight());
             double hRange = mapZoom.getHmax() - mapZoom.getHmin();
             double vRange = mapZoom.getVmax() - mapZoom.getVmin();
-            double currentScrollX = hRange == 0 ? 0
-                    : (mapZoom.getHvalue() - mapZoom.getHmin()) / hRange * maxScrollX;
-            double currentScrollY = vRange == 0 ? 0
-                    : (mapZoom.getVvalue() - mapZoom.getVmin()) / vRange * maxScrollY;
+            double currentScrollX;
+            if (hRange == 0) {
+                currentScrollX = 0;
+            } else {
+                currentScrollX = (mapZoom.getHvalue() - mapZoom.getHmin()) / hRange * maxScrollX;
+            }
+            double currentScrollY;
+            if (vRange == 0) {
+                currentScrollY = 0;
+            } else {
+                currentScrollY = (mapZoom.getVvalue() - mapZoom.getVmin()) / vRange * maxScrollY;
+            }
             mapZoom.setHvalue(mapZoom.getHmin() + Math.clamp((currentScrollX + scrollDeltaX)
                     / Math.max(1, maxScrollX), 0, 1) * hRange);
             mapZoom.setVvalue(mapZoom.getVmin() + Math.clamp((currentScrollY + scrollDeltaY)
