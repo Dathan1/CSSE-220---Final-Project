@@ -102,6 +102,14 @@ public class StarterApp extends Application {
         title.setTranslateY(-150);
         title.setFont(new Font(100));
 
+
+
+        Label instructions = new Label("Try to guess where this location is on \n       the Rose-Hulman Campus ");
+        instructions.setFont(new Font(30));
+        instructions.setLayoutX(1160);
+        instructions.setLayoutY(600);
+        //instructions.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8px;");
+
         Label pointsNum = new Label("0");
         pointsNum.setLayoutX(1400);
         pointsNum.setLayoutY(400);
@@ -236,7 +244,7 @@ public class StarterApp extends Application {
         StackPane menu = new StackPane(title, start, rose);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, confirm, next, location, pointsNum, pointsString,locationString,locationNum, mapZoom, menuButton);
+        Pane game = new Pane(back1, instructions,confirm, next, location, pointsNum, pointsString,locationString,locationNum, mapZoom, menuButton);
         Pane score = new Pane(finalMenuButton);
         VBox scores = new VBox(thanksLabel, TotalPoints, HighestRoundScore, ClosestSingleGuess);
         scores.setAlignment(Pos.BASELINE_CENTER);
