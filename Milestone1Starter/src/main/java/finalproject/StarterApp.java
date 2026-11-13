@@ -96,10 +96,10 @@ public class StarterApp extends Application {
         double sh = screen.getHeight();
 
         // title
-        Label title = new Label("RoseGuessr");
-        title.setLayoutX(175);
-        title.setLayoutY(10);
-        title.setFont(new Font(30));
+        Label title = new Label("oseGuessr");
+        title.setTranslateX(65);
+        title.setTranslateY(-150);
+        title.setFont(new Font(100));
 
         Label pointsNum = new Label("0");
         pointsNum.setLayoutX(1400);
@@ -145,8 +145,7 @@ public class StarterApp extends Application {
 
         // buttons
         Button start = new Button("Start");
-        start.setLayoutX(210);
-        start.setLayoutY(110);
+        start.setPrefSize(200,50);
 
         Button menuButton = new Button("Menu");
         menuButton.setPrefSize(200,50);
@@ -201,6 +200,13 @@ public class StarterApp extends Application {
         map.setLayoutY(0);
         map.setImage(mapImage);
 
+        ImageView rose = new ImageView();
+        rose.setTranslateX(-218);
+        rose.setTranslateY(-183);
+        InputStream stream2 = getClass().getResourceAsStream("/images/RoseHulmanLogo.png");
+        Image logo = new Image(stream2);
+        rose.setImage(logo);
+
         Line guessLine = new Line();
         guessLine.setVisible(false);
         guessLine.setStroke(Color.BLUE);
@@ -226,10 +232,10 @@ public class StarterApp extends Application {
         mapZoom.setLayoutX(sw - mapWidth);
         mapZoom.setLayoutY(sh - mapHeight - 100);
 
-        Pane menu = new Pane(title, start);
+        StackPane menu = new StackPane(title, start, rose);
         menu.setPadding(new Insets(20));
 
-        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString,locationString,locationNum,roundString,roundNum, next, mapZoom, menuButton);
+        Pane game = new Pane(back1, confirm, location, pointsNum, pointsString,locationString,locationNum,roundString,roundNum, mapZoom, menuButton);
         //temporarily moving marker, correctMarker, and guessLine to mapContent
         // window
 
@@ -288,6 +294,7 @@ public class StarterApp extends Application {
                 mapZoom.setHvalue(mapZoom.getHmin());
                 mapZoom.setVvalue(mapZoom.getVmin());
             }
+            game.getChildren().add(next);
         });
 
         next.setOnAction(event -> {
@@ -308,6 +315,7 @@ public class StarterApp extends Application {
                 mapScale.setY(1);
                 mapZoom.setHvalue(mapZoom.getHmin());
                 mapZoom.setVvalue(mapZoom.getVmin());
+                game.getChildren().remove(next);
             }
             if(round.get().isRoundEnded()){
                 HighestRoundScore.setText("Highest Round Score: " + round.get().getMaxPoints());
