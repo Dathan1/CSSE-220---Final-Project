@@ -85,9 +85,6 @@ public class StarterApp extends Application {
         }
         AtomicReference<Boolean> confirmClicked = new AtomicReference<>(false);
         // screen size
-        int highestRound = 0;
-        int closestGuess = 6400;
-        int totalPoints = 0;
         double markerX=0;
         double markerY=0;
         AtomicReference<GameRound> round = new AtomicReference<>(new GameRound(locations));
@@ -137,14 +134,13 @@ public class StarterApp extends Application {
         Label statusLabel = new Label("");
         statusLabel.setLayoutX(10);
         statusLabel.setLayoutY(30);
-
-        Label HighestRoundScore = new Label("Highest Round Score: " + highestRound);
+        Label HighestRoundScore = new Label("Highest Round Score: " + round.get().getMaxPoints());
         HighestRoundScore.setFont(new Font(30));
 
-        Label ClosestSingleGuess = new Label("Closest Guess: " + closestGuess + " meters");
+        Label ClosestSingleGuess = new Label("Closest Guess: " + round.get().getClosestGuess() + " meters");
         ClosestSingleGuess.setFont(new Font(30));
 
-        Label TotalPoints = new Label("Total Points: " + totalPoints);
+        Label TotalPoints = new Label("Total Points: " + round.get().getPointsEarned());
         TotalPoints.setFont(new Font(30));
 
         // buttons
@@ -285,6 +281,8 @@ public class StarterApp extends Application {
                         marker.getLayoutX() + marker.getFitWidth() / 2,
                         marker.getLayoutY() + marker.getFitHeight());
                 round.get().setPointsEarned(round.get().getPointsEarned()+ guess.pointTotal());
+                if (guess.pointTotal() > round.get().getMaxPoints()){round.get().setMaxPoints(guess.pointTotal());}
+                if (guess.distance() < round.get().getClosestGuess()){round.get().setClosestGuess(guess.distance());}
                 pointsNum.setText(String.valueOf((Integer.valueOf(round.get().getPointsEarned()))));
                 mapScale.setX(1);
                 mapScale.setY(1);
@@ -313,6 +311,10 @@ public class StarterApp extends Application {
                 mapZoom.setVvalue(mapZoom.getVmin());
             }
             if(round.get().isRoundEnded()){
+                HighestRoundScore.setText("Highest Round Score: " + round.get().getMaxPoints());
+                ClosestSingleGuess.setText("Closest Guess: " + round.get().getClosestGuess() + " meters");
+                TotalPoints.setText("Total Points: " + round.get().getPointsEarned());
+
                 stage.setScene(ScoreMenu);
                 //stage.setFullScreen(true);
             }
